@@ -1,0 +1,1 @@
+`sam2_hiera_tiny.pt` should be in this folder

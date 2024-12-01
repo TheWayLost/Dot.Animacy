@@ -62,3 +62,12 @@ Generate and classify animated dot motions
 - [待定] - 终版
   - 跑完实验，看看有啥问题
   - 待定
+
+
+
+#### 目前参考的东西 REFERENCE
+
+- https://github.com/facebookresearch/sam2
+  - 记得先安装sam2以及配对应环境
+- https://github.com/heyoeyo/muggled_sam/
+  - lib文件夹从这里抄的
