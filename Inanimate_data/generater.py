@@ -1,19 +1,15 @@
 import numpy as np
 import cv2
-from Inanimate_data.inanimate_types import *
-
-np.random.seed(0)
-DATADIR = "data"
-T = 300  # Number of trajectory points
-W, H = 640, 480  # Image dimensions (width, height)
+from inanimate_types import *
 
 
 class inanimate_generater:
-    def __init__(self, T, dt, H, W):
+    def __init__(self, T, dt, H, W, DATADIR):
         self.T = T
         self.dt = dt
         self.H = H
         self.W = W
+        self.datadir = DATADIR
         
     def sample(self, motion_type):
         if motion_type == "brownian_motion":
@@ -21,7 +17,7 @@ class inanimate_generater:
         elif motion_type == "constant_velocity":
             trajectory = constant_velocity_motion(self.T, self.dt, self.H, self.W, vx=10, vy=5, step_size=5)
         elif motion_type == "linear_acceleration":
-            trajectory = linear_acceleration_motion(self.T, self.dt, self.H, self.W, acceleration=0.1, step_size=2)
+            trajectory = linear_acceleration_motion(self.T, self.dt, self.H, self.W, acceleration=0.15, step_size=1)
         elif motion_type == "oscillatory":
             trajectory = oscillatory_motion(self.T, self.dt, self.H, self.W, amplitude=50, frequency=0.5, step_size=2)
         elif motion_type == "circular":
@@ -36,11 +32,19 @@ class inanimate_generater:
             raise ValueError("Invalid motion type")
         return trajectory
     
-    def generate(self, motion_type, noise_sigma=0.01):
-        trajectory = self.sample(motion_type)
+    def generate(self, motion_type, noise_sigma: float = 0.01, max_num: int = 100):
+        flag = False
+        for _ in range(max_num):
+            trajectory = self.sample(motion_type)
+            if trajectory is not None:
+                flag = True
+                break
+        if not flag:
+            print(f"Failed to generate a valid trajectory for {motion_type}")
+            return False
         noisy_trajectory = noised_motion(trajectory, noise_sigma)
-        self.visualize_trajectory_with_trail(noisy_trajectory, f"{DATADIR}/{motion_type}.mp4")
-        return noisy_trajectory
+        self.visualize_trajectory_with_trail(noisy_trajectory, f"{self.datadir}/{motion_type}.mp4")
+        return True
         
     def visualize_trajectory_with_trail(self, trajectory, video_filename, max_trail_time=20, frame_rate=60):
         """
@@ -92,3 +96,24 @@ class inanimate_generater:
         # Release the video writer object
         out.release()
         print(f"Video saved as {video_filename}")
+
+
+if __name__ == '__main__':
+    np.random.seed(0)
+    DATADIR = "data"
+    T = 600  # Number of trajectory points
+    W, H = 1280, 720  # Image dimensions (width, height)
+    type_list = [
+        # "brownian_motion", 
+        # "constant_velocity", 
+        "linear_acceleration", 
+        # "oscillatory", 
+        # "circular", 
+        # "simple_pendulum", 
+        # "sine_wave_driven", 
+        # "spiral",
+    ]
+    motion_generater = inanimate_generater(T, 1/60, H, W, DATADIR)
+    for motion in type_list:
+        print(motion)
+        motion_generater.generate(motion, noise_sigma=0.01, max_num=100)

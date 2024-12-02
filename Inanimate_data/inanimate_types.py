@@ -20,7 +20,7 @@ def brownian_motion(T, dt, H, W, sigma=1, step_size=1):
         
         # Ensure trajectory stays within bounds
         if trajectory[t, 0] < 0 or trajectory[t, 0] > W or trajectory[t, 1] < 0 or trajectory[t, 1] > H:
-            return brownian_motion(T, dt, H, W, sigma, step_size)
+            return None
     
     return trajectory
 
@@ -41,7 +41,7 @@ def constant_velocity_motion(T, dt, H, W, vx=1, vy=1, step_size=1):
         
         # Ensure trajectory stays within bounds
         if trajectory[t, 0] < 0 or trajectory[t, 0] > W or trajectory[t, 1] < 0 or trajectory[t, 1] > H:
-            return constant_velocity_motion(T, dt, H, W, vx, vy, step_size)
+            return None
     
     return trajectory
 
@@ -66,7 +66,7 @@ def linear_acceleration_motion(T, dt, H, W, acceleration=0.1, step_size=1):
 
         # Ensure trajectory stays within bounds
         if trajectory[t, 0] < 0 or trajectory[t, 0] > W or trajectory[t, 1] < 0 or trajectory[t, 1] > H:
-            return linear_acceleration_motion(T, dt, H, W, acceleration, step_size)
+            return None
 
     return trajectory
 
@@ -88,7 +88,7 @@ def oscillatory_motion(T, dt, H, W, amplitude=1, frequency=1, step_size=1):
         
         # Ensure trajectory stays within bounds
         if trajectory[t, 0] < 0 or trajectory[t, 0] > W or trajectory[t, 1] < 0 or trajectory[t, 1] > H:
-            return oscillatory_motion(T, dt, H, W, amplitude, frequency, step_size)
+            return None
     
     return trajectory
 
@@ -111,7 +111,7 @@ def circular_motion(T, dt, H, W, radius=1, angular_velocity=1, step_size=1):
         
         # Ensure trajectory stays within bounds
         if trajectory[t, 0] < 0 or trajectory[t, 0] > W or trajectory[t, 1] < 0 or trajectory[t, 1] > H:
-            return circular_motion(T, dt, H, W, radius, angular_velocity, step_size)
+            return None
     
     return trajectory
 
@@ -142,7 +142,7 @@ def simple_pendulum_motion(T, dt, H, W, amplitude=1, gravity=-9.8, length=1, ste
     
         # Ensure trajectory stays within bounds
         if trajectory[t, 0] < 0 or trajectory[t, 0] > W or trajectory[t, 1] < 0 or trajectory[t, 1] > H:
-            return simple_pendulum_motion(T, dt, H, W, amplitude, gravity, length, step_size)
+            return None
     
     return trajectory
 
@@ -167,7 +167,7 @@ def sine_wave_driven_motion(T, dt, H, W, amplitude=1, frequency=1, step_size=1):
 
         # Ensure trajectory stays within bounds
         if trajectory[t, 0] < 0 or trajectory[t, 0] > W or trajectory[t, 1] < 0 or trajectory[t, 1] > H:
-            return sine_wave_driven_motion(T, dt, H, W, amplitude, frequency, step_size)
+            return None
 
     return trajectory
 
@@ -190,7 +190,7 @@ def spiral_motion(T, dt, H, W, radius=1, angular_velocity=1, expansion_rate=0.01
 
         # Ensure trajectory stays within bounds
         if trajectory[t, 0] < 0 or trajectory[t, 0] > W or trajectory[t, 1] < 0 or trajectory[t, 1] > H:
-            return spiral_motion(T, dt, H, W, radius, angular_velocity, expansion_rate, step_size)
+            return None
 
     return trajectory
 
