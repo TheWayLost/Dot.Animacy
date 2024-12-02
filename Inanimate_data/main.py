@@ -3,12 +3,11 @@ import numpy as np
 from generater import inanimate_generater
 
 
-def single():
+def single(data_num):
     np.random.seed(0)
     DATADIR = "data"
     T = 360  # Number of trajectory points
     W, H = 1280, 720  # Image dimensions (width, height)
-    data_num = 150
     type_list = [
         "brownian_motion", 
         "constant_velocity", 
@@ -32,12 +31,11 @@ def single():
                 np.save(f"{DATADIR}/{motion}/{cnt}.npy", data)
 
 
-def double():
+def double(data_num):
     np.random.seed(0)
     DATADIR = "data"
     T = 360  # Number of trajectory points
     W, H = 1280, 720  # Image dimensions (width, height)
-    data_num = 15
     type_list = [
         "brownian_motion", 
         "constant_velocity", 
@@ -74,5 +72,6 @@ def double():
             
             
 if __name__ == '__main__':
-    # single()
-    double()
+    data_num = 1500
+    # single(data_num)
+    double(data_num)
