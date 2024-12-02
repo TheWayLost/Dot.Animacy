@@ -1,0 +1,71 @@
+/mnt/d/my_github/dotAnimacy/Dot.Animacy/data-trial/SuperSmash/SuperSmash-1/sample_12.mp4
+"obj1": {
+            "box_tlbr_norm_list": [],
+            "fg_xy_norm_list": [(0.340, 0.577)],
+            "bg_xy_norm_list": [],
+        },
+        "obj2": {
+            # "box_tlbr_norm_list": [[(0.06, 0.62), (0.22, 0.80)]],
+            "box_tlbr_norm_list": [],
+            "fg_xy_norm_list": [(0.6015, 0.3889)],
+            "bg_xy_norm_list": [],
+        },
+./data-trial/SuperSmash/test_messy/sample_12-dot-test.mp4
+
+/mnt/d/my_github/dotAnimacy/Dot.Animacy/data-trial/SNK/snk-test-video.mp4
+"obj1": {
+            "box_tlbr_norm_list": [],
+            "fg_xy_norm_list": [(0.2094, 0.5444)],
+            "bg_xy_norm_list": [],
+        },
+        "obj2": {
+            # "box_tlbr_norm_list": [[(0.06, 0.62), (0.22, 0.80)]],
+            "box_tlbr_norm_list": [],
+            "fg_xy_norm_list": [(0.7234, 0.5639)],
+            "bg_xy_norm_list": [],
+        },
+./data-trial/SuperSmash/test_messy/snk-test-dot-test.mp4
+
+/mnt/d/my_github/dotAnimacy/Dot.Animacy/data-trial/overcooked/Overcooked2-test-video.mp4
+"obj1": {
+            "box_tlbr_norm_list": [],
+            "fg_xy_norm_list": [(0.3797, 0.2333)],
+            "bg_xy_norm_list": [],
+        },
+        "obj2": {
+            # "box_tlbr_norm_list": [[(0.06, 0.62), (0.22, 0.80)]],
+            "box_tlbr_norm_list": [],
+            "fg_xy_norm_list": [(0.6187, 0.2333)],
+            "bg_xy_norm_list": [],
+        },
+./data-trial/SuperSmash/test_messy/overcooked2-test-dot-test.mp4
+
+/mnt/d/my_github/dotAnimacy/Dot.Animacy/data-trial/paopaotang/MINJE-test.mp4
+30: {
+        "obj1": {
+            "box_tlbr_norm_list": [],
+            "fg_xy_norm_list": [(192/480, 321/360)],
+            "bg_xy_norm_list": [],
+        },
+        "obj2": {
+            # "box_tlbr_norm_list": [[(0.06, 0.62), (0.22, 0.80)]],
+            "box_tlbr_norm_list": [],
+            "fg_xy_norm_list": [(447/480, 140/360)],
+            "bg_xy_norm_list": [],
+        },
+./data-trial/SuperSmash/test_messy/MINJE-test-dot-test.mp4
+
+/mnt/d/my_github/dotAnimacy/Dot.Animacy/data-trial/SuperSmash/SuperSmash-1-60/sample_2.mp4
+0: {
+        "obj1": {
+            "box_tlbr_norm_list": [],
+            "fg_xy_norm_list": [(264/640, 288/360)],
+            "bg_xy_norm_list": [],
+        },
+        "obj2": {
+            # "box_tlbr_norm_list": [[(0.06, 0.62), (0.22, 0.80)]],
+            "box_tlbr_norm_list": [],
+            "fg_xy_norm_list": [(384/640, 139/360)],
+            "bg_xy_norm_list": [],
+        },
+./data-trial/SuperSmash/test_messy/supersmash-test-dot-60.mp4

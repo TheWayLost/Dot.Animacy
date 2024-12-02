@@ -23,7 +23,7 @@ from lib.demo_helpers.video_data_storage import SAM2VideoObjectResults
 
 
 # Define pathing & device usage
-video_path = "/mnt/d/my_github/dotAnimacy/Dot.Animacy/data-trial/SuperSmash/SuperSmash-1/sample_12.mp4"
+video_path = "/mnt/d/my_github/dotAnimacy/Dot.Animacy/data-trial/SNK/snk-test-video.mp4"
 model_path = "/mnt/d/my_github/dotAnimacy/Dot.Animacy/model_weights/sam2_hiera_tiny.pt"
 device, dtype = "cpu", torch.float32
 if torch.cuda.is_available():
@@ -43,17 +43,17 @@ color_dict = {
 # For demo purposes, we'll define all prompts ahead of time and store them per frame index & object
 # -> First level key (e.g. 0, 30, 35) represents the frame index where the prompts should be applied
 # -> Second level key (e.g. 'obj1', 'obj2') represents which 'object' the prompt belongs to for tracking purposes
-prompts_per_frame_index = {
+prompts_per_frame_index = {  ## 可以改变起始位置
     0: {
         "obj1": {
             "box_tlbr_norm_list": [],
-            "fg_xy_norm_list": [(0.340, 0.577)],
+            "fg_xy_norm_list": [(0.2094, 0.5444)],
             "bg_xy_norm_list": [],
         },
         "obj2": {
             # "box_tlbr_norm_list": [[(0.06, 0.62), (0.22, 0.80)]],
             "box_tlbr_norm_list": [],
-            "fg_xy_norm_list": [(0.6015, 0.3889)],
+            "fg_xy_norm_list": [(0.7234, 0.5639)],
             "bg_xy_norm_list": [],
         },
         #"obj3": {
@@ -95,8 +95,8 @@ if not ok_frame:
 vcap.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
 # 定义输出视频路径和编码格式
-output_video_path = "./data-trial/SuperSmash/test_messy/sample_12-dot-test.avi"  # 替换为实际保存路径
-fourcc = cv2.VideoWriter_fourcc('X', 'V', 'I', 'D')
+output_video_path = "./data-trial/SuperSmash/test_messy/snk-test-dot-test.mp4"  # 替换为实际保存路径
+fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
 fps = int(vcap.get(cv2.CAP_PROP_FPS))  # 获取输入视频的帧率
 print(fps)
 frame_height, frame_width = first_frame.shape[:2]
@@ -113,11 +113,13 @@ print("Loading model...")
 model_config_dict, sammodel = make_samv2_from_original_state_dict(model_path)
 sammodel.to(device=device, dtype=dtype)
 
+# radius_scaling =1
+
 # Process video frames
 close_keycodes = {27, ord("q")}  # Esc or q to close
 try:
     total_frames = int(vcap.get(cv2.CAP_PROP_FRAME_COUNT))
-    for frame_idx in range(total_frames):
+    for frame_idx in range(total_frames): 
 
         # Read frames
         ok_frame, frame = vcap.read()
@@ -162,6 +164,7 @@ try:
         # Update tracking using newest frame
         # combined_mask_result = np.zeros(frame.shape[0:2], dtype=bool)
         combined_mask_result = np.zeros((*frame.shape[:2], 3), dtype=np.uint8) # 颜色
+        mask_result = np.zeros((*frame.shape[:2], 3), dtype=np.uint8) # 颜色
         for obj_key_name, obj_memory in memory_per_obj_dict.items():
             obj_score, best_mask_idx, mask_preds, mem_enc, obj_ptr = sammodel.step_video_masking(
                 encoded_imgs_list, **obj_memory.to_dict()
@@ -186,17 +189,23 @@ try:
                 align_corners=False,
             )
             obj_mask_binary = (obj_mask > 0.0).cpu().numpy().squeeze()
+            mask_result = np.bitwise_or(mask_result, np.stack([obj_mask_binary] * 3, axis = -1))
 
             # draw dot (circle)
             mask_coords = np.argwhere(obj_mask_binary)
             if mask_coords.size > 0:
                 center_y, center_x = mask_coords.mean(axis=0).astype(int)  # 质心
                 area = mask_coords.shape[0]  # 掩码面积
-                radius = int(np.sqrt(area / np.pi)/2)  # 根据面积计算半径
+                radius = int(np.sqrt(area / np.pi)/1.1)  # 根据面积计算半径
+                if frame_idx == 0:
+                #    radius_scaling = 25 / radius
+                #radius = int(radius_scaling * radius)
+                    print(radius)
                 # 创建一个全零数组，大小和 obj_mask_binary 一样
                 circular_mask = np.zeros_like(combined_mask_result, dtype=np.uint8)
                 color = color_dict.get(obj_key_name, (255, 255, 255))  # 默认白色
             cv2.circle(circular_mask, (center_x, center_y), radius, color, -1)  # 圆内部像素设置为 1
+            # cv2.circle(circular_mask, (center_x, center_y), 20, color, -1)  # 圆内部像素设置为 1 固定大小
             obj_mask_binary = (circular_mask > 0.0).squeeze()
             if obj_key_name == "obj3":
                 obj_mask_binary = np.stack([(obj_mask > 0.0).cpu().numpy().squeeze()] * 3, axis = -1)
@@ -206,13 +215,15 @@ try:
 
         # Combine original image & mask result side-by-side for display
         combined_mask_result_uint8 = combined_mask_result.astype(np.uint8) * 255
-        # disp_mask = cv2.cvtColor(combined_mask_result_uint8, cv2.COLOR_GRAY2BGR)
+        mask_result_uint8 = mask_result.astype(np.uint8) * 255
+        gray_mask = mask_result_uint8
+        # disp_mask = cv2.cvtColor(mask_result_uint8, cv2.COLOR_GRAY2BGR)
         disp_mask = combined_mask_result_uint8
-        sidebyside_frame = np.hstack((frame, disp_mask))
+        sidebyside_frame = np.hstack((frame, disp_mask, gray_mask))
         sidebyside_frame = cv2.resize(sidebyside_frame, dsize=None, fx=0.5, fy=0.5)
 
         # 写入帧到输出视频
-        print(disp_mask.shape)
+        # print(disp_mask.shape)
         video_writer.write(disp_mask)
         # Show result
         cv2.imshow("Video Segmentation Result - q to quit", sidebyside_frame)
