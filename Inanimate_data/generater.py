@@ -104,14 +104,14 @@ if __name__ == '__main__':
     T = 600  # Number of trajectory points
     W, H = 1280, 720  # Image dimensions (width, height)
     type_list = [
-        # "brownian_motion", 
-        # "constant_velocity", 
+        "brownian_motion", 
+        "constant_velocity", 
         "linear_acceleration", 
-        # "oscillatory", 
-        # "circular", 
-        # "simple_pendulum", 
-        # "sine_wave_driven", 
-        # "spiral",
+        "oscillatory", 
+        "circular", 
+        "simple_pendulum", 
+        "sine_wave_driven", 
+        "spiral",
     ]
     motion_generater = inanimate_generater(T, 1/60, H, W, DATADIR)
     for motion in type_list:
