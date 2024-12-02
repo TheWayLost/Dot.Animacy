@@ -39,5 +39,5 @@ def split_video(input_video_path, output_folder, sample_duration=10):
 
 # 使用示例
 input_video_path = "/mnt/d/my_github/dotAnimacy/Dot.Animacy/data-trial/SuperSmash/kirby-joker-1.mp4"  # 替换视频路径
-output_folder = "/mnt/d/my_github/dotAnimacy/Dot.Animacy/data-trial/SuperSmash/SuperSmash-1"    # 替换为存放切分视频的文件夹路径
-split_video(input_video_path, output_folder)
+output_folder = "/mnt/d/my_github/dotAnimacy/Dot.Animacy/data-trial/SuperSmash/SuperSmash-1-60"    # 替换为存放切分视频的文件夹路径
+split_video(input_video_path, output_folder, 60)
