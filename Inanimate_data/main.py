@@ -3,9 +3,8 @@ import numpy as np
 from generater import inanimate_generater
 
 
-def single(data_num):
+def single(data_num, data_dir):
     np.random.seed(0)
-    DATADIR = "data"
     T = 360  # Number of trajectory points
     W, H = 1280, 720  # Image dimensions (width, height)
     type_list = [
@@ -17,10 +16,10 @@ def single(data_num):
         "sine_wave_driven", 
         "spiral",
     ]
-    motion_generater = inanimate_generater(T, 1/60, H, W, DATADIR)
+    motion_generater = inanimate_generater(T, 1/60, H, W, data_dir)
     for motion in type_list:
         print(motion)
-        os.makedirs(f"{DATADIR}/{motion}", exist_ok=True)
+        os.makedirs(f"{data_dir}/{motion}", exist_ok=True)
         cnt = 0
         while cnt < data_num:
             noise_sigma = np.random.uniform(0, 5)
@@ -28,12 +27,11 @@ def single(data_num):
             if data is False: continue
             else: 
                 cnt += 1
-                np.save(f"{DATADIR}/{motion}/{cnt}.npy", data)
+                np.save(f"{data_dir}/{motion}/{cnt}.npy", data)
 
 
-def double(data_num):
+def double(data_num, data_dir):
     np.random.seed(0)
-    DATADIR = "data"
     T = 360  # Number of trajectory points
     W, H = 1280, 720  # Image dimensions (width, height)
     type_list = [
@@ -45,9 +43,9 @@ def double(data_num):
         "sine_wave_driven", 
         "spiral",
     ]
-    motion_generater = inanimate_generater(T, 1/60, H, W, DATADIR)
+    motion_generater = inanimate_generater(T, 1/60, H, W, data_dir)
     cnt = 0
-    os.makedirs(f"{DATADIR}/mixed", exist_ok=True)
+    os.makedirs(f"{data_dir}/mixed", exist_ok=True)
     while cnt < data_num:
         # Randomly choose two motion types (can repeat)
         motion_type_1 = np.random.choice(type_list)
@@ -68,10 +66,15 @@ def double(data_num):
             # Concatenate the two trajectories along axis 1 (features)
             combined_data = np.concatenate((data_1, data_2), axis=1)  # Shape becomes (T, 6)
             # Save the concatenated trajectory
-            np.save(f"{DATADIR}/mixed/{cnt}.npy", combined_data)
+            np.save(f"{data_dir}/mixed/{cnt}.npy", combined_data)
+            motion_generater.vis_without_trail_2(combined_data, f"{data_dir}/videos/{cnt}.mp4")
             
             
 if __name__ == '__main__':
-    data_num = 1500
-    # single(data_num)
-    double(data_num)
+    np.random.seed(0)
+    
+    data_num = 5
+    data_dir = "data"
+    os.makedirs(f"{data_dir}/videos", exist_ok=True)
+    # single(data_num, DATADIR)
+    double(data_num, data_dir)

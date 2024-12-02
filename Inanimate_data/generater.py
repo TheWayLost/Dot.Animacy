@@ -55,10 +55,10 @@ class inanimate_generater:
         noisy_trajectory = noised_motion(trajectory, noise_sigma)
         r = sin_r(self.T, bias=20, w=5)
         noisy_trajectory = np.concatenate([noisy_trajectory, r[:, np.newaxis]], axis=1)
-        # self.visualize_without_trail(noisy_trajectory, f"{self.datadir}/{motion_type}.mp4")
+        # self.vis_without_trail_2(noisy_trajectory, f"{self.datadir}/{motion_type}.mp4")
         return noisy_trajectory
         
-    def visualize_with_trail(self, trajectory, video_filename, max_trail_time=10, frame_rate=60):
+    def vis_with_trail(self, trajectory, video_filename, max_trail_time=10, frame_rate=60):
         """
         Create a video of the trajectory with a trailing effect and save it to the file.
         
@@ -109,7 +109,7 @@ class inanimate_generater:
         out.release()
         print(f"Video saved as {video_filename}")
         
-    def visualize_without_trail(self, trajectory, video_filename, frame_rate=60):
+    def vis_without_trail_1(self, trajectory, video_filename, frame_rate=60):
         """
         Create a video of the trajectory and save it to the file.
         
@@ -137,6 +137,53 @@ class inanimate_generater:
             if 0 <= x < self.W and 0 <= y < self.H:
                 # Draw the current point in black with radius r
                 cv2.circle(frame, (x, y), r, (0, 0, 0), -1)  # Draw the current point with radius r
+
+            # Write the current frame to the video file
+            out.write(frame)
+        
+        # Release the video writer object
+        out.release()
+        print(f"Video saved as {video_filename}")
+        
+    def vis_without_trail_2(self, trajectory, video_filename, frame_rate=60):
+        """
+        Create a video of the trajectory and save it to the file.
+        
+        Parameters:
+        - trajectory: (T, 6) trajectory data, T is the number of frames, and 6 is the (x1, y1, r1, x2, y2, r2) coordinates per frame.
+        - video_filename: Filename to save the video.
+        - frame_rate: Video frame rate, controlling the frame rate of the generated video.
+        """
+        
+        # Initialize video writer with lower quality settings (e.g., use 'MJPG' codec)
+        fourcc = cv2.VideoWriter_fourcc(*'H264')  # Use H264 codec for MP4 format
+        out = cv2.VideoWriter(video_filename, fourcc, frame_rate, (self.W, self.H))
+        
+        # Create a white background for the frames
+        background = np.ones((self.H, self.W, 3), dtype=np.uint8) * 255
+        
+        # Define colors for the two points
+        color_1 = (0, 0, 255)  # Blue color for the first point (BGR format)
+        color_2 = (255, 0, 0)  # Red color for the second point (BGR format)
+        
+        for t in range(len(trajectory)):
+            # Copy the white background to prepare for drawing
+            frame = background.copy()
+            
+            # Extract coordinates and radius for both points at time t
+            x1, y1, r1, x2, y2, r2 = trajectory[t]
+            
+            # Convert to integer coordinates and radius
+            x1, y1, r1 = int(x1), int(y1), int(r1)
+            x2, y2, r2 = int(x2), int(y2), int(r2)
+            
+            # Draw the first point (in blue)
+            if 0 <= x1 < self.W and 0 <= y1 < self.H:
+                cv2.circle(frame, (x1, y1), r1, color_1, -1)  # Draw the first point with radius r1
+            
+            # Draw the second point (in red)
+            if 0 <= x2 < self.W and 0 <= y2 < self.H:
+                cv2.circle(frame, (x2, y2), r2, color_2, -1)  # Draw the second point with radius r2
 
             # Write the current frame to the video file
             out.write(frame)

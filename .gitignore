@@ -2,3 +2,4 @@ model_weights/*.pt
 **/__pycache__
 video
 **.npy
+**.mp4
