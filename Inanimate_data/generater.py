@@ -53,7 +53,7 @@ class inanimate_generater:
             print(f"Failed to generate a valid trajectory for {motion_type}")
             return False
         noisy_trajectory = noised_motion(trajectory, noise_sigma)
-        r = sin_r(self.T, bias=20, w=5)
+        r = sin_r(self.T, bias=25, w=10)
         noisy_trajectory = np.concatenate([noisy_trajectory, r[:, np.newaxis]], axis=1)
         # self.vis_without_trail_2(noisy_trajectory, f"{self.datadir}/{motion_type}.mp4")
         return noisy_trajectory
@@ -74,7 +74,7 @@ class inanimate_generater:
         out = cv2.VideoWriter(video_filename, fourcc, frame_rate, (self.W, self.H))
         
         # Create a white background for the frames
-        background = np.ones((self.H, self.W, 3), dtype=np.uint8) * 255
+        background = np.ones((self.H, self.W, 3), dtype=np.uint8)
         
         for t in range(len(trajectory)):
             # Copy the white background to prepare for drawing
@@ -100,42 +100,6 @@ class inanimate_generater:
             x, y, r = int(x), int(y), int(r)
             
             if 0 <= x < self.W and 0 <= y < self.H:
-                cv2.circle(frame, (x, y), r, (0, 0, 0), -1)  # Draw the current point with radius r
-
-            # Write the current frame to the video file
-            out.write(frame)
-        
-        # Release the video writer object
-        out.release()
-        print(f"Video saved as {video_filename}")
-        
-    def vis_without_trail_1(self, trajectory, video_filename, frame_rate=60):
-        """
-        Create a video of the trajectory and save it to the file.
-        
-        Parameters:
-        - trajectory: (T, 3) trajectory data, T is the number of frames, and 3 is the (x, y, r) coordinates per frame.
-        - video_filename: Filename to save the video.
-        - frame_rate: Video frame rate, controlling the frame rate of the generated video.
-        """
-        
-        # Initialize video writer with lower quality settings (e.g., use 'MJPG' codec)
-        fourcc = cv2.VideoWriter_fourcc(*'H264')  # Use H264 codec for MP4 format
-        out = cv2.VideoWriter(video_filename, fourcc, frame_rate, (self.W, self.H))
-        
-        # Create a white background for the frames
-        background = np.ones((self.H, self.W, 3), dtype=np.uint8) * 255
-        
-        for t in range(len(trajectory)):
-            # Copy the white background to prepare for drawing
-            frame = background.copy()
-            
-            # Draw the current point (without trail)
-            x, y, r = trajectory[t]  # x, y coordinates and the radius r
-            x, y, r = int(x), int(y), int(r)  # Ensure x, y, r are integers
-            
-            if 0 <= x < self.W and 0 <= y < self.H:
-                # Draw the current point in black with radius r
                 cv2.circle(frame, (x, y), r, (0, 0, 0), -1)  # Draw the current point with radius r
 
             # Write the current frame to the video file
