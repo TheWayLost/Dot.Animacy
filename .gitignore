@@ -1,2 +1,3 @@
-model_weights/sam2_hiera_tiny.pt
+model_weights/*.pt
 **/__pycache__
+video
