@@ -160,7 +160,7 @@ class inanimate_generater:
         out = cv2.VideoWriter(video_filename, fourcc, frame_rate, (self.W, self.H))
         
         # Create a white background for the frames
-        background = np.ones((self.H, self.W, 3), dtype=np.uint8) * 255
+        background = np.ones((self.H, self.W, 3), dtype=np.uint8) * 0
         
         # Define colors for the two points
         color_1 = (0, 0, 255)  # Blue color for the first point (BGR format)
