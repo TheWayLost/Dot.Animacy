@@ -32,6 +32,6 @@ def split_video(input_file, segment_time, output_pattern):
     run_ffmpeg_command(command)
 
 if __name__ == "__main__":
-    input_file = "video/overcooked.mp4" # 替换为你的视频文件路径
-    output_pattern = "video/overcooked/sample_%03d.mp4" # 输出文件名格式
-    split_video(input_file, 10, output_pattern)
+    input_file = "video/kof.mp4" # 替换为你的视频文件路径
+    output_pattern = "video/kof/sample_%03d.mp4" # 输出文件名格式
+    split_video(input_file, 6, output_pattern)
