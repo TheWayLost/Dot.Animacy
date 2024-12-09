@@ -3,3 +3,4 @@ model_weights/*.pt
 video
 **.npy
 **.mp4
+**.pyc
