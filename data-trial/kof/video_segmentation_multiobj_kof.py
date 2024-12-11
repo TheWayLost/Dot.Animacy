@@ -179,7 +179,7 @@ def trajectory_extract(video_path, model_path, output_video_path, prompts_per_fr
             gray_mask = mask_result_uint8
             # disp_mask = cv2.cvtColor(mask_result_uint8, cv2.COLOR_GRAY2BGR)
             disp_mask = combined_mask_result_uint8
-            sidebyside_frame = np.hstack((frame, disp_mask))
+            sidebyside_frame = np.hstack((frame, disp_mask, gray_mask))
             sidebyside_frame = cv2.resize(sidebyside_frame, dsize=None, fx=0.5, fy=0.5)
 
             # 写入帧到输出视频
@@ -205,19 +205,19 @@ def trajectory_extract(video_path, model_path, output_video_path, prompts_per_fr
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    video_path = "video/kof/sample_001.mp4"  # 替换为实际视频路径
+    video_path = "video/output_slices/slice_82.mp4"  # 替换为实际视频路径
     model_path = "model_weights/sam2.1_hiera_tiny.pt"  # 替换为实陼模型路径
-    output_video_path = "video/kof/out_001.mp4"  # 替换为实际保存路径
+    output_video_path = "video/output_slices/out_35.mp4"  # 替换为实际保存路径
     prompts_per_frame_index = {  ## 可以改变起始位置
         0: {
             "obj1": {
                 "box_tlbr_norm_list": [],
-                "fg_xy_norm_list": [(130/640, 239/360)],
+                "fg_xy_norm_list": [(74/320, 109/180)],
                 "bg_xy_norm_list": [],
             },
             "obj2": {
                 "box_tlbr_norm_list": [],
-                "fg_xy_norm_list": [(564/640,205/360)],
+                "fg_xy_norm_list": [(246/320,109/180)],
                 "bg_xy_norm_list": [],
             },
         }
