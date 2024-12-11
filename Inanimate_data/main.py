@@ -1,10 +1,10 @@
 import os
 import numpy as np
 from generater import inanimate_generater
-
+from tqdm import tqdm
 
 def sample_single(motion_generater: inanimate_generater, motion_type: str, t: int, base = None):
-    MAX = 100
+    MAX = 500
     flag = False
     for i in range(MAX):
         data = motion_generater.generate(motion_type, t, base=base)
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     np.random.seed(0)
     T = 360  # Number of trajectory points
     W, H = 1280, 720  # Image dimensions (width, height)
-    data_num = 10
+    data_num = 1000
     data_dir = "data"
     os.makedirs(f"{data_dir}/motions", exist_ok=True)
     os.makedirs(f"{data_dir}/videos", exist_ok=True)
@@ -52,8 +52,17 @@ if __name__ == '__main__':
     # double(motion_generater, type_list, T)
     # mixed(motion_generater, type_list, T)
     
-    for i in range(data_num):
-        data = mixed(motion_generater, type_list, T)
+    dataset = []
+    
+    for i in tqdm(range(data_num)):
+        if np.random.rand() < 0.2:
+            data = mixed(motion_generater, type_list, T)
+        else:
+            data = double(motion_generater, type_list, T)
+        dataset.append(data)
         np.save(f"{data_dir}/motions/{i}.npy", data)
         # motion_generater.vis_without_trail_2(data, f"{data_dir}/videos/{i}.mp4")
+    inanimacy_dataset = np.array(dataset)
+    print(inanimacy_dataset.shape)
+    np.save(f"{data_dir}/inanimacy_dataset.npy", inanimacy_dataset)
     
