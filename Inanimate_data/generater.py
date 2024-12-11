@@ -14,8 +14,8 @@ class inanimate_generater:
         if motion_type == "brownian_motion":
             trajectory = brownian_motion(T, self.dt, self.H, self.W, sigma=1, base=base)
         elif motion_type == "constant_velocity":
-            vx_ = np.random.uniform(-1, 1) * 100
-            vy_ = np.random.uniform(-1, 1) * 100
+            vx_ = np.random.uniform(-1, 1) * 80
+            vy_ = np.random.uniform(-1, 1) * 80
             trajectory = constant_velocity_motion(T, self.dt, self.H, self.W, vx=vx_, vy=vy_, base=base)
         elif motion_type == "linear_acceleration":
             acc = np.random.uniform(-1, 1) * 1.5
