@@ -34,11 +34,13 @@ def split_video_by_black_frames(video_path, output_dir):
 
     # 按照纯黑帧分割视频
     start_frame = 0
+    video_idx = 0
     os.makedirs(output_dir, exist_ok=True)
     for i, end_frame in enumerate(tqdm(black_frame_indices)):
         if end_frame > start_frame:
             if end_frame > start_frame+fps*10:
-                cut_video(video_path, start_frame, end_frame, output_dir, i)
+                cut_video(video_path, start_frame, end_frame, output_dir, video_idx)
+                video_idx += 1
             start_frame = end_frame
 
     # 处理最后一段
