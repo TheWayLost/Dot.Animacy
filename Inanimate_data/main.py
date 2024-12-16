@@ -33,7 +33,7 @@ if __name__ == '__main__':
     np.random.seed(0)
     T = 360  # Number of trajectory points
     W, H = 1280, 720  # Image dimensions (width, height)
-    data_num = 1000
+    data_num = 0
     data_dir = "data"
     os.makedirs(f"{data_dir}/motions", exist_ok=True)
     os.makedirs(f"{data_dir}/videos", exist_ok=True)
@@ -51,18 +51,24 @@ if __name__ == '__main__':
     # Example usage
     # double(motion_generater, type_list, T)
     # mixed(motion_generater, type_list, T)
+    # for i in range(2, 12):
+    #     data = np.load(f"tmp/{i}.npy")
+    #     print(data.shape)
+    #     motion_generater.vis_trajectory_with_line(data, f"tmp/{i}_0.png", radius=6, skip_frames=1)
     
-    dataset = []
-    
-    for i in tqdm(range(data_num)):
-        if np.random.rand() < 0.2:
-            data = mixed(motion_generater, type_list, T)
-        else:
-            data = double(motion_generater, type_list, T)
-        dataset.append(data)
-        np.save(f"{data_dir}/motions/{i}.npy", data)
-        # motion_generater.vis_without_trail_2(data, f"{data_dir}/videos/{i}.mp4")
-    inanimacy_dataset = np.array(dataset)
-    print(inanimacy_dataset.shape)
-    np.save(f"{data_dir}/inanimacy_dataset.npy", inanimacy_dataset)
+    if data_num > 0:
+        dataset = []
+        for i in tqdm(range(data_num)):
+            if np.random.rand() < 0.01:
+                data = mixed(motion_generater, type_list, T) # noqa
+            else:
+                data = double(motion_generater, type_list, T)
+            dataset.append(data)
+            np.save(f"{data_dir}/motions/{i}.npy", data)
+            # motion_generater.vis_as_video(data, f"{data_dir}/videos/{i}.mp4")
+            # motion_generater.vis_as_image(data, f"{data_dir}/videos/{i}.png", skip_frames=5)
+            motion_generater.vis_trajectory_with_line(data, f"{data_dir}/videos/{i}_1.png", radius=3, skip_frames=1)
+        inanimacy_dataset = np.array(dataset)
+        print(inanimacy_dataset.shape)
+        np.save(f"{data_dir}/inanimacy_dataset.npy", inanimacy_dataset)
     
