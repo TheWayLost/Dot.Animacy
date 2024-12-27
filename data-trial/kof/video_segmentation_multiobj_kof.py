@@ -11,6 +11,8 @@ except ModuleNotFoundError:
     parent_folder = os.path.dirname(os.path.dirname(__file__))
     if "lib" in os.listdir(parent_folder):
         sys.path.insert(0, parent_folder)
+    elif "lib" in os.listdir(os.path.dirname(parent_folder)):
+        sys.path.insert(0, os.path.dirname(parent_folder))
     else:
         raise ImportError("Can't find path to lib folder!")
 
@@ -117,15 +119,15 @@ def trajectory_extract(video_path, model_path, output_video_path, prompts_per_fr
 
                         # Show prompt in it's own window and close after viewing
                         wintitle = f"Prompt ({obj_key_name}) - Press key to continue"
-                        cv2.imshow(wintitle, prompt_vis_frame)
-                        cv2.waitKey(0)
-                        cv2.destroyWindow(wintitle)
+                        # cv2.imshow(wintitle, prompt_vis_frame)
+                        # cv2.waitKey(0)
+                        # cv2.destroyWindow(wintitle)
 
             # Update tracking using newest frame
             # combined_mask_result = np.zeros(frame.shape[0:2], dtype=bool)
             combined_mask_result = np.zeros((*frame.shape[:2], 3), dtype=np.uint8) # 颜色
             mask_result = np.zeros((*frame.shape[:2], 3), dtype=np.uint8) # 颜色
-            feature = []
+            x1, y1, r1, x2, y2, r2 = 0, 0, 0, 0, 0, 0
             for obj_key_name, obj_memory in memory_per_obj_dict.items():
                 obj_score, best_mask_idx, mask_preds, mem_enc, obj_ptr = sammodel.step_video_masking(
                     encoded_imgs_list, **obj_memory.to_dict()
@@ -163,8 +165,10 @@ def trajectory_extract(video_path, model_path, output_video_path, prompts_per_fr
                     # 创建一个全零数组，大小和 obj_mask_binary 一样
                     circular_mask = np.zeros_like(combined_mask_result, dtype=np.uint8)
                     color = color_dict.get(obj_key_name, (255, 255, 255))  # 默认白色
-                if obj_key_name == "obj1" or obj_key_name == "obj2":
-                    feature.extend([center_x, center_y, radius])
+                    if obj_key_name == "obj1":
+                        x1, y1, r1 = center_x, center_y, radius
+                    if obj_key_name == "obj2":
+                        x2, y2, r2 = center_x, center_y, radius
                 cv2.circle(circular_mask, (center_x, center_y), radius, color, -1)  # 圆内部像素设置为 1
                 obj_mask_binary = (circular_mask > 0.0).squeeze()
                 if obj_key_name == "obj3":
@@ -172,7 +176,7 @@ def trajectory_extract(video_path, model_path, output_video_path, prompts_per_fr
 
 
                 combined_mask_result = np.bitwise_or(combined_mask_result, obj_mask_binary)
-            feature_list.append(np.array(feature))
+            feature_list.append(np.array([x1, y1, r1, x2, y2, r2]))
             # Combine original image & mask result side-by-side for display
             combined_mask_result_uint8 = combined_mask_result.astype(np.uint8) * 255
             mask_result_uint8 = mask_result.astype(np.uint8) * 255
@@ -186,7 +190,7 @@ def trajectory_extract(video_path, model_path, output_video_path, prompts_per_fr
             # print(disp_mask.shape)
             video_writer.write(disp_mask)
             # Show result
-            cv2.imshow("Video Segmentation Result - q to quit", sidebyside_frame)
+            # cv2.imshow("Video Segmentation Result - q to quit", sidebyside_frame)
 
             #print(disp_mask.shape, output_size)
             keypress = cv2.waitKey(1) & 0xFF
@@ -202,24 +206,31 @@ def trajectory_extract(video_path, model_path, output_video_path, prompts_per_fr
     finally:
         vcap.release()
         video_writer.release()  # 释放 VideoWriter
-        cv2.destroyAllWindows()
+        # cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     video_path = "video/output_slices/slice_82.mp4"  # 替换为实际视频路径
-    model_path = "model_weights/sam2.1_hiera_tiny.pt"  # 替换为实陼模型路径
+    model_path = "../../model_weights/sam2.1_hiera_tiny.pt"  # 替换为实陼模型路径
     output_video_path = "video/output_slices/out_35.mp4"  # 替换为实际保存路径
     prompts_per_frame_index = {  ## 可以改变起始位置
         0: {
             "obj1": {
                 "box_tlbr_norm_list": [],
-                "fg_xy_norm_list": [(74/320, 109/180)],
+                "fg_xy_norm_list": [(69/320, 109/180)],
                 "bg_xy_norm_list": [],
             },
             "obj2": {
                 "box_tlbr_norm_list": [],
-                "fg_xy_norm_list": [(246/320,109/180)],
+                "fg_xy_norm_list": [(250/320,109/180)],
                 "bg_xy_norm_list": [],
             },
         }
     }
-    trajectory_extract(video_path, model_path, output_video_path, prompts_per_frame_index)
+    os.makedirs("video/output_slices_2/segmentation", exist_ok=True)
+    os.makedirs("video/output_slices_2/numpy", exist_ok=True)
+    for file in os.listdir("video/output_slices_2"):
+        if file.endswith(".mp4"):
+            video_path = f"video/output_slices_2/{file}"
+            output_video_path = f"video/output_slices_2/segmentation/{file}"
+            output_numpy_path = f"video/output_slices_2/numpy/{file.replace('.mp4', '.npy')}"
+            trajectory_extract(video_path, model_path, output_video_path, prompts_per_frame_index)
