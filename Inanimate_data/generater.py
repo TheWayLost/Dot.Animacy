@@ -18,7 +18,7 @@ class inanimate_generater:
             vy_ = np.random.uniform(-1, 1) * 80
             trajectory = constant_velocity_motion(T, self.dt, self.H, self.W, vx=vx_, vy=vy_, base=base)
         elif motion_type == "linear_acceleration":
-            acc = np.random.uniform(-1, 1) * 1.5
+            acc = np.random.uniform(-1, 1) * 2
             trajectory = linear_acceleration_motion(T, self.dt, self.H, self.W, acceleration=acc, base=base)
         elif motion_type == "circular":
             radius_ = np.random.uniform(50, 300)
@@ -33,10 +33,10 @@ class inanimate_generater:
             freq_ = np.random.uniform(0.1, 1)
             trajectory = sine_wave_driven_motion(T, self.dt, self.H, self.W, amplitude=amplitude_, frequency=freq_, base=base)
         elif motion_type == "spiral":
-            radius_ = np.random.uniform(1, 5)
-            angular_vel = np.random.uniform(-1, 1) * 10
-            expansion_rate_ = np.random.uniform(0.2, 2)
-            trajectory = spiral_motion(T, self.dt, self.H, self.W, radius=1, angular_velocity=angular_vel, expansion_rate=expansion_rate_, base=base)
+            radius_ = np.random.uniform(10, 100)
+            expansion_rate_ = np.random.uniform(0.5, 3)
+            lin_vel = np.random.uniform(-1, 1) * 500
+            trajectory = spiral_motion_conserved(T, self.dt, self.H, self.W, radius=radius_, expansion_rate=expansion_rate_, base=base, v=lin_vel)
         else:
             raise ValueError("Invalid motion type")
         return trajectory
@@ -51,8 +51,10 @@ class inanimate_generater:
         if not flag:
             print(f"Failed to generate a valid trajectory for {motion_type}")
             return False
-        noise_sigma = np.random.uniform(0, 5)
+        # noisy_trajectory = trajectory
+        noise_sigma = np.random.uniform(2, 5)
         noisy_trajectory = noised_motion(trajectory, noise_sigma)
+        # r = 25
         r = sin_r(T, bias=25, w=10)
         noisy_trajectory = np.concatenate([noisy_trajectory, r[:, np.newaxis]], axis=1)
         # self.vis_without_trail_2(noisy_trajectory, f"{self.datadir}/{motion_type}.mp4")
