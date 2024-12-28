@@ -158,6 +158,7 @@ def sine_wave_driven_motion(T, dt, H, W, amplitude=1, frequency=1, base = None):
 
 # Spiral Motion
 # Mode: Motion along a spiral path (expanding radius with constant angular velocity).
+# NOTE: we abandon this mode because it violate law of conservation of angular momentum
 def spiral_motion(T, dt, H, W, radius=1, angular_velocity=1, expansion_rate=0.01, base = None):
     """
     Spiral Motion
@@ -180,6 +181,40 @@ def spiral_motion(T, dt, H, W, radius=1, angular_velocity=1, expansion_rate=0.01
 
     return trajectory
 
+def spiral_motion_conserved(T, dt, H, W, radius=1, expansion_rate=0.01, base=None, v=100):
+    """
+    Spiral Motion (with conserved angular momentum)
+    Mode: Motion along a spiral path, with constant angular velocity.
+    The trajectory is restricted within the bounds (H, W).
+    """
+    trajectory = np.zeros((T, 2))
+    if base is None:
+        base = [np.random.uniform(int(W/5*2), int(W/5*3)), np.random.uniform(int(H/4), int(H/4*3))]
+    
+    # Initialize radius and angular velocity
+    r_0 = radius
+    trajectory[0] = base
+    omega_t = 0
+    
+    # The spiral motion is now governed by the condition that angular momentum is conserved.
+    for t in range(1, T):
+        # Compute the new radius at time t (growing exponentially)
+        r_t = r_0 * np.exp(expansion_rate * t * dt)
+        
+        # Angular velocity is adjusted based on the current radius to keep constant speed
+        d_omega = v / r_t  # Angular velocity based on constant linear speed
+        omega_t += d_omega * dt
+        
+        # Update the trajectory
+        trajectory[t, 0] = base[0] + r_t * np.cos(omega_t)
+        trajectory[t, 1] = base[1] + r_t * np.sin(omega_t)
+        
+        # Ensure trajectory stays within bounds
+        if trajectory[t, 0] < 0 or trajectory[t, 0] > W or trajectory[t, 1] < 0 or trajectory[t, 1] > H:
+            return None
+
+    return trajectory
+
 def noised_motion(trajectory, noise_sigma=0.01):
     """add noise to the trajectory"""
     
@@ -191,4 +226,4 @@ def noised_motion(trajectory, noise_sigma=0.01):
 def sin_r(T, bias, w, a = 0.1):
     t = np.arange(T)
     r = w * np.sin(a*t) + bias
-    return r
+    return noised_motion(r)
