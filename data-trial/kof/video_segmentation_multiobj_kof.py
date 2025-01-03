@@ -11,6 +11,8 @@ except ModuleNotFoundError:
     parent_folder = os.path.dirname(os.path.dirname(__file__))
     if "lib" in os.listdir(parent_folder):
         sys.path.insert(0, parent_folder)
+    elif "lib" in os.listdir(os.path.dirname(parent_folder)):
+        sys.path.insert(0, os.path.dirname(parent_folder))
     else:
         raise ImportError("Can't find path to lib folder!")
 
@@ -205,19 +207,19 @@ def trajectory_extract(video_path, model_path, output_video_path, prompts_per_fr
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    video_path = "video/output_slices/slice_82.mp4"  # 替换为实际视频路径
+    video_path = "video/output_slices/slice_400.mp4"  # 替换为实际视频路径
     model_path = "model_weights/sam2.1_hiera_tiny.pt"  # 替换为实陼模型路径
     output_video_path = "video/output_slices/out_35.mp4"  # 替换为实际保存路径
     prompts_per_frame_index = {  ## 可以改变起始位置
         0: {
             "obj1": {
                 "box_tlbr_norm_list": [],
-                "fg_xy_norm_list": [(74/320, 109/180)],
+                "fg_xy_norm_list": [(69/320, 109/180)],
                 "bg_xy_norm_list": [],
             },
             "obj2": {
                 "box_tlbr_norm_list": [],
-                "fg_xy_norm_list": [(246/320,109/180)],
+                "fg_xy_norm_list": [(250/320,109/180)],
                 "bg_xy_norm_list": [],
             },
         }
