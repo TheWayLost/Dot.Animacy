@@ -31,9 +31,10 @@ def mixed(motion_generater: inanimate_generater, type_list: list, t: int):
     
 if __name__ == '__main__':
     np.random.seed(0)
-    T = 360  # Number of trajectory points
+    T = 180  # Number of trajectory points
+    FPS = 30
     W, H = 1280, 720  # Image dimensions (width, height)
-    data_num = 0
+    data_num = 20
     data_dir = "data"
     os.makedirs(f"{data_dir}/motions", exist_ok=True)
     os.makedirs(f"{data_dir}/videos", exist_ok=True)
@@ -46,7 +47,7 @@ if __name__ == '__main__':
         "sine_wave_driven", 
         "spiral",
     ]
-    motion_generater = inanimate_generater(1/60, H, W, data_dir)
+    motion_generater = inanimate_generater(1/FPS, H, W, data_dir)
     
     # Example usage
     # double(motion_generater, type_list, T)
@@ -59,13 +60,13 @@ if __name__ == '__main__':
     if data_num > 0:
         dataset = []
         for i in tqdm(range(data_num)):
-            if np.random.rand() < 0.01:
+            if np.random.rand() < 0.0: # ban this mode
                 data = mixed(motion_generater, type_list, T) # noqa
             else:
                 data = double(motion_generater, type_list, T)
             dataset.append(data)
             np.save(f"{data_dir}/motions/{i}.npy", data)
-            # motion_generater.vis_as_video(data, f"{data_dir}/videos/{i}.mp4")
+            motion_generater.vis_as_video(data, f"{data_dir}/videos/{i}.mp4")
             # motion_generater.vis_as_image(data, f"{data_dir}/videos/{i}.png", skip_frames=5)
             motion_generater.vis_trajectory_with_line(data, f"{data_dir}/videos/{i}_1.png", radius=3, skip_frames=1)
         inanimacy_dataset = np.array(dataset)
