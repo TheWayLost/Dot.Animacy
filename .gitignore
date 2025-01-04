@@ -5,3 +5,4 @@ model_weights/*.pt
 **.mp4
 **.png
 **.pyc
+logs
