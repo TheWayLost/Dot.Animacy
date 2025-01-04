@@ -2,6 +2,7 @@ import os
 import numpy as np
 from generater import inanimate_generater
 from tqdm import tqdm
+from utils import visulizer
 
 def sample_single(motion_generater: inanimate_generater, motion_type: str, t: int, base = None):
     MAX = 500
@@ -27,14 +28,33 @@ def mixed(motion_generater: inanimate_generater, type_list: list, t: int):
     base = [data_1[-1, 0:2], data_1[-1, 3:5]]
     data_2 = double(motion_generater, type_list, int(t/2), base)
     return np.concatenate((data_1, data_2), axis=0)
-            
+      
+def interp(x):
+    """
+    Generate a tensor y of shape (2N-1, C) from input tensor x of shape (N, C).
+    Even indices of y are the rows of x, and odd indices are the linear interpolation 
+    between adjacent rows of x.
+
+    :param x: torch.Tensor, input tensor of shape (N, C)
+    :return: torch.Tensor, output tensor of shape (2N-1, C)
+    """
+    N, T, C = x.shape
+    y = np.empty((N, 2 * T - 1, C), dtype=x.dtype)
+    y[:, 0::2] = x
+    y[:, 1::2] = (x[:, :-1] + x[:, 1:]) / 2
+    
+    return y
+          
     
 if __name__ == '__main__':
     np.random.seed(0)
-    T = 180  # Number of trajectory points
     FPS = 30
+    SECONDS = 15
+    T = FPS * SECONDS  # Number of trajectory points
     W, H = 1280, 720  # Image dimensions (width, height)
-    data_num = 20
+    visulizer = visulizer(W, H, FPS, SECONDS)
+    
+    data_num = 0
     data_dir = "data"
     os.makedirs(f"{data_dir}/motions", exist_ok=True)
     os.makedirs(f"{data_dir}/videos", exist_ok=True)
@@ -52,10 +72,14 @@ if __name__ == '__main__':
     # Example usage
     # double(motion_generater, type_list, T)
     # mixed(motion_generater, type_list, T)
-    # for i in range(2, 12):
-    #     data = np.load(f"tmp/{i}.npy")
-    #     print(data.shape)
-    #     motion_generater.vis_trajectory_with_line(data, f"tmp/{i}_0.png", radius=6, skip_frames=1)
+    data = np.load(f"tmp/tmp.npy")
+    data = data[-6:]
+    data = interp(data)
+    data = interp(data)
+    for i in range(6):
+        tmp_data = data[i]
+        print(tmp_data.shape)
+        visulizer.vis_trajectory_with_line(tmp_data, f"tmp/{i}_0.png", radius=6, skip_frames=1)
     
     if data_num > 0:
         dataset = []
@@ -66,9 +90,9 @@ if __name__ == '__main__':
                 data = double(motion_generater, type_list, T)
             dataset.append(data)
             np.save(f"{data_dir}/motions/{i}.npy", data)
-            motion_generater.vis_as_video(data, f"{data_dir}/videos/{i}.mp4")
-            # motion_generater.vis_as_image(data, f"{data_dir}/videos/{i}.png", skip_frames=5)
-            motion_generater.vis_trajectory_with_line(data, f"{data_dir}/videos/{i}_1.png", radius=3, skip_frames=1)
+            visulizer.vis_as_video(data, f"{data_dir}/videos/{i}.mp4", frame_rate=FPS)
+            # visulizer.vis_as_image(data, f"{data_dir}/videos/{i}.png", skip_frames=5)
+            visulizer.vis_trajectory_with_line(data, f"{data_dir}/videos/{i}_1.png", radius=3, skip_frames=1)
         inanimacy_dataset = np.array(dataset)
         print(inanimacy_dataset.shape)
         np.save(f"{data_dir}/inanimacy_dataset.npy", inanimacy_dataset)
