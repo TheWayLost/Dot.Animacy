@@ -146,7 +146,7 @@ class ConditionalTransformer(nn.Module):
 class BaseModel(nn.Module):
     def __init__(
         self, 
-        in_dim=4, out_dim=4*FRAMES, 
+        in_dim=6, out_dim=6, 
         x_embed_dim=48, t_embed_dim=16,
         embed_dim=256, num_heads=4, num_layers=2, ff_dim=128):
         super(BaseModel, self).__init__()
@@ -169,21 +169,27 @@ class BaseModel(nn.Module):
             nn.Linear(proj_dim, embed_dim),
             nn.GELU()
         )
-        self.proj2 = nn.Sequential(
-            nn.Linear(embed_dim+t_embed_dim, embed_dim),
-            nn.GELU(),
-        )
         self.positional_encoding = get_positional_encoding(FRAMES//9, x_embed_dim).unsqueeze(0).to(self.device)
+        print(self.positional_encoding.shape)
         self.layers = nn.ModuleList([
-            nn.TransformerEncoderLayer(d_model=embed_dim, nhead=num_heads, dim_feedforward=ff_dim)
+            nn.TransformerEncoderLayer(d_model=embed_dim+t_embed_dim, nhead=num_heads, dim_feedforward=ff_dim)
             for _ in range(num_layers)
         ])
         self.layers = nn.Sequential(*self.layers)
-        self.norm = nn.LayerNorm(embed_dim)
-        self.mlp2 = nn.Sequential(
-            nn.Linear(embed_dim, out_dim),
-            nn.ReLU(),
+        # self.norm = nn.LayerNorm(embed_dim)
+        self.proj2 = nn.Sequential(
+            nn.Linear(embed_dim+t_embed_dim, proj_dim),
+            nn.GELU(),
+            nn.Unflatten(1, (FRAMES//3, x_embed_dim//3))
         )
+        self.decoder = nn.Sequential(
+            nn.Conv1d(x_embed_dim//3, out_dim, kernel_size=3, padding=1),
+            nn.BatchNorm1d(out_dim),
+            nn.AdaptiveAvgPool1d(FRAMES),
+            nn.Conv1d(out_dim, out_dim, kernel_size=3, padding=1),
+            nn.BatchNorm1d(out_dim),
+        )
+        self.proj3 = nn.Linear(out_dim, out_dim)
 
     def forward(self, x, t):
         B, T, C = x.size() # batch_size, frames, channels = 6
@@ -191,10 +197,11 @@ class BaseModel(nn.Module):
         x = self.emb_x(x.permute(0, 2, 1))
         x = self.proj1(x.permute(0, 2, 1) + self.positional_encoding) 
         t = self.emb_t(t.unsqueeze(-1))
-        x = self.proj2(torch.cat([x, t], dim=1))
+        x = torch.cat([x, t], dim=1)
         for layer in self.layers:
             x = layer(x)
-        x = self.norm(x)
-        x = self.mlp2(x)
-        x = x.view(B, T, -1)
+        # x = self.norm(x)
+        x = self.proj2(x)
+        x = self.decoder(x.permute(0, 2, 1))
+        x = self.proj3(x.permute(0, 2, 1))
         return x
