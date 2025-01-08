@@ -26,7 +26,7 @@ from lib.demo_helpers.video_data_storage import SAM2VideoObjectResults
 
 
 # Define pathing & device usage
-def trajectory_extract(video_path, model_path, output_video_path, prompts_per_frame_index,
+def trajectory_extract(video_path, model_path, output_video_path,output_numpy_path, prompts_per_frame_index,
         imgenc_config_dict = {"max_side_length": 1024, "use_square_sizing": True},
         color_dict = {
         "obj1": (0, 0, 255),  # 红色
@@ -226,11 +226,11 @@ if __name__ == "__main__":
             },
         }
     }
-    os.makedirs("video/output_slices_2/segmentation", exist_ok=True)
-    os.makedirs("video/output_slices_2/numpy", exist_ok=True)
-    for file in os.listdir("video/output_slices_2"):
+    os.makedirs("video/output_slices_1/segmentation", exist_ok=True)
+    os.makedirs("video/output_slices_1/numpy", exist_ok=True)
+    for file in os.listdir("video/output_slices_1"):
         if file.endswith(".mp4"):
-            video_path = f"video/output_slices_2/{file}"
-            output_video_path = f"video/output_slices_2/segmentation/{file}"
-            output_numpy_path = f"video/output_slices_2/numpy/{file.replace('.mp4', '.npy')}"
-            trajectory_extract(video_path, model_path, output_video_path, prompts_per_frame_index)
+            video_path = f"video/output_slices_1/{file}"
+            output_video_path = f"video/output_slices_1/segmentation/{file}"
+            output_numpy_path = f"video/output_slices_1/numpy/{file.replace('.mp4', '.npy')}"
+            trajectory_extract(video_path, model_path, output_video_path,output_numpy_path, prompts_per_frame_index)
