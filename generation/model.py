@@ -1,12 +1,5 @@
-import os
-import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import torchsde
-from torchdyn.core import NeuralODE
-from torchvision.transforms import ToPILImage
-from torchvision.utils import make_grid
 import math
 from torchcfm.conditional_flow_matching import *
 
@@ -33,10 +26,10 @@ class transformer_wrapper(torch.nn.Module):
 class SimpleConv1d(nn.Module):
     def __init__(self):
         super(SimpleConv1d, self).__init__()
-        self.conv1 = nn.Conv1d(in_channels=7, out_channels=64, kernel_size=3, padding=1)
+        self.conv1 = nn.Conv1d(in_channels=5, out_channels=64, kernel_size=3, padding=1)
         self.conv2 = nn.Conv1d(in_channels=64, out_channels=256, kernel_size=3, padding=1)
         self.conv3 = nn.Conv1d(in_channels=256, out_channels=64, kernel_size=3, padding=1)
-        self.fc = nn.Linear(64, 6)
+        self.fc = nn.Linear(64, 4)
         self.relu = nn.ReLU()
 
     def forward(self, x, t):

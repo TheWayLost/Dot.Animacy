@@ -2,14 +2,14 @@ import numpy as np
 import cv2 
 
     
-class visulizer:
+class visualizer:
     def __init__(self, H, W, FPS, T):
         self.H = H
         self.W = W
         self.FPS = FPS
         self.T = T
         
-    def vis_as_video(self, trajectory, video_filename, frame_rate=60):
+    def vis_as_video(self, trajectory, video_filename, frame_rate=60, encoder = 'H264'):
         """
         Create a video of the trajectory and save it to the file.
         
@@ -20,7 +20,7 @@ class visulizer:
         """
         
         # Initialize video writer with lower quality settings (e.g., use 'MJPG' codec)
-        fourcc = cv2.VideoWriter_fourcc(*'H264')  # Use H264 codec for MP4 format
+        fourcc = cv2.VideoWriter_fourcc(*encoder)  # Use H264 codec for MP4 format
         out = cv2.VideoWriter(video_filename, fourcc, frame_rate, (self.W, self.H))
         
         # Create a white background for the frames

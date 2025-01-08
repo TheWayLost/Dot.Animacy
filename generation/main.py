@@ -6,7 +6,7 @@ from tqdm import tqdm
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
 from torchcfm.conditional_flow_matching import *
-from utils import visulizer
+from utils import visualizer
 from dataset import kofDataset, DataLoader
 from model import transformer_wrapper, conv1d_wrapper, SimpleConv1d, BaseModel
 from datetime import datetime
@@ -19,7 +19,8 @@ def save(
     log_dir: str,
     node: NeuralODE,
     train_dataset: kofDataset,
-    device: torch.device
+    device: torch.device,
+    encoder = 'H264'
     ):
     # 训练完成后保存模型的 checkpoint
     checkpoint = {
@@ -37,7 +38,7 @@ def save(
     result = result.cpu().numpy()
     print("sample shape: ", result.shape)
     
-    vis = visulizer(720, 1280, 30, 6)
+    vis = visualizer(720, 1280, 30, 6)
     result = np.array(result, dtype=np.int64)
     r = 30
     data = np.ones((result.shape[0], result.shape[1], 6), dtype=np.int64) * r
@@ -45,7 +46,7 @@ def save(
     os.makedirs(f"{log_dir}/vis/{epoch}", exist_ok=True)
     np.save(f"{log_dir}/vis/{epoch}/BaseModel_10sample.npy", data)
     for i in range(10):
-        vis.vis_as_video(data[i], f"{log_dir}/vis/{epoch}/BaseModel_sample{i}.mp4", frame_rate=30)
+        vis.vis_as_video(data[i], f"{log_dir}/vis/{epoch}/BaseModel_sample{i}.mp4", frame_rate=30, encoder=encoder)
         vis.vis_trajectory_with_line(data[i], f"{log_dir}/vis/{epoch}/BaseModel_sample{i}_line.png")
 
 def test(node, device):
@@ -159,7 +160,7 @@ def train_basemodel(
 
 if __name__ == "__main__":
     model = "BaseModel" 
-    # model = "Conv1d"
+    model = "Conv1d"
     max_epoch = 200
     # fix seed
     torch.manual_seed(0)
@@ -167,14 +168,14 @@ if __name__ == "__main__":
     
     data_folder = "kof_data/segment_slice"
     # exp_name = datetime.now().strftime("%Y-%m-%d_%H-%M")
-    exp_name = f"{model}_wo_Normalize_{max_epoch}epoch_linear"
+    exp_name = f"{model}_wo_Normalize_{max_epoch}epoch_linear_"+datetime.now().strftime("%Y-%m-%d_%H-%M")
     log_dir = os.path.join("logs", exp_name)
     os.makedirs(log_dir, exist_ok=True)
     os.makedirs(os.path.join(log_dir, "ckpts"), exist_ok=True)
     os.makedirs(os.path.join(log_dir, "vis"), exist_ok=True)
 
     train_dataset = kofDataset(data_folder, normalize=False, transform=True)
-    train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True, num_workers=2)
+    train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger = SummaryWriter(log_dir)
     
