@@ -90,8 +90,8 @@ def train(
                     loss.backward()
                     optimizer.step()
                     pbar.set_postfix(loss=loss.item())
-                    
-            lr_scheduler.step()
+
+            # lr_scheduler.step()1. model size 2. lr_scheduler 3. loss 4. batch_size
             
             avg_mse_loss /= len(train_loader)
             avg_penalty /= len(train_loader)
@@ -116,7 +116,7 @@ def train_conv1d(
     #################################
     sigma = 0.0
     model = SimpleConv1d().to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-8)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-8)
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=max_epoch//5, gamma=0.5)
     # FM = ConditionalFlowMatcher(sigma=sigma)
     FM = ExactOptimalTransportConditionalFlowMatcher(sigma=sigma)
@@ -160,7 +160,7 @@ def train_basemodel(
 
 if __name__ == "__main__":
     model = "BaseModel" 
-    model = "Conv1d"
+    # model = "Conv1d"
     max_epoch = 200
     # fix seed
     torch.manual_seed(0)
@@ -175,7 +175,7 @@ if __name__ == "__main__":
     os.makedirs(os.path.join(log_dir, "vis"), exist_ok=True)
 
     train_dataset = kofDataset(data_folder, normalize=False, transform=True)
-    train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger = SummaryWriter(log_dir)
     

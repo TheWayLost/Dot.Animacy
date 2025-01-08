@@ -26,10 +26,10 @@ class transformer_wrapper(torch.nn.Module):
 class SimpleConv1d(nn.Module):
     def __init__(self):
         super(SimpleConv1d, self).__init__()
-        self.conv1 = nn.Conv1d(in_channels=5, out_channels=64, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv1d(in_channels=64, out_channels=256, kernel_size=3, padding=1)
-        self.conv3 = nn.Conv1d(in_channels=256, out_channels=64, kernel_size=3, padding=1)
-        self.fc = nn.Linear(64, 4)
+        self.conv1 = nn.Conv1d(in_channels=5, out_channels=32, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv1d(in_channels=32, out_channels=64, kernel_size=3, padding=1)
+        self.conv3 = nn.Conv1d(in_channels=64, out_channels=128, kernel_size=3, padding=1)
+        self.fc = nn.Linear(128, 4)
         self.relu = nn.ReLU()
 
     def forward(self, x, t):
