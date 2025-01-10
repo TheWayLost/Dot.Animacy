@@ -1,10 +1,10 @@
 # Dot.Animacy
 Generate and classify animated dot motions
 
-![Short demo](circle_vis-gt-smo-444.gif)
-![Short demo](circle_vis-swap-8-6sec.gif)
-![Short demo](circle_vis-simpleCond-timeemb.gif)
-![Short demo](circle_vis-simpleCond.gif)
+![Short demo](output-2_55_22.gif)![Short demo](output-2_55_14.gif)
+
+![Short demo](output-2_55_2.gif)![Short demo](output-2_54_28.gif)
+
 
 Which one do u think best represents animacy? o.O
 
