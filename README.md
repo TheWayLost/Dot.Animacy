@@ -1,6 +1,36 @@
 # Dot.Animacy
 Generate and classify animated dot motions
 
+
+<table>
+  <tr>
+    <td>
+      <video width="320" height="180" controls>
+        <source src="circle_vis-gt-smo-444.mp4" type="video/mp4">
+      </video>
+    </td>
+    <td>
+      <video width="320" height="180" controls>
+        <source src="circle_vis-swap-8-6sec.mp4" type="video/mp4">
+      </video>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <video width="320" height="180" controls>
+        <source src="circle_vis-simpleCond-timeemb.mp4" type="video/mp4">
+      </video>
+    </td>
+    <td>
+      <video width="320" height="180" controls>
+        <source src="circle_vis-simpleCond.mp4" type="video/mp4">
+      </video>
+    </td>
+  </tr>
+</table>
+
+
+
 ## TODO List
 
 **Initial Plan / Idea**
