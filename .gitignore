@@ -1,8 +1,5 @@
 model_weights/*.pt
 **/__pycache__
-**/video
-**.npy
-**.mp4
-**.png
 **.pyc
 logs
+supersmash-data

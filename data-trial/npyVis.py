@@ -262,29 +262,30 @@ if __name__ == "__main__":
     # lossfile_path = "/mnt/d/my_github/dotAnimacy/Dot.Animacy/SimpleConv1d_400e_loss_norm_smoData_swap.npy"
     # lossvis(lossfile_path)
 
-    # res = np.load("/mnt/d/my_github/dotAnimacy/Dot.Animacy/SimpleConv1d_400e_10sample_norm_smoData_swap.npy")
+    # res = np.load("/mnt/d/my_github/dotAnimacy/Dot.Animacy/SimpleConv1d_cond_222e_10sample.npy")
     # vis(res[9].repeat(2,0))
     # for i in range(10):
     #     vis(res[i].repeat(2,0))
-    #vis(np.load(kof_path + str(346)+".npy"))
+    # vis(np.load(kof_path + str(1)+".npy"))
 
     #数据smooth
     #for i in tqdm(range(785)):
     #    smo(i)
 
     # vis(res[8].repeat(2,0))
-    # create_circle_video(res[8].repeat(3,0))
+    # print(res[8][[0,44,89],:])
+    # create_circle_video(res[8].repeat(2,0), output_path="circle_vis-simpleCond-timeemb.mp4")
 
     res = np.load("/mnt/d/my_github/dotAnimacy/Dot.Animacy/SimpleConv1d_500epoch_path_smoData_swap.npy")
     print(res.shape)
     # #pathVis(res)
     # #pathVis3d(res)
-    create_circle_video(res[5][8].repeat(3,0))
+    create_circle_video(res[5][8].repeat(2,0), output_path="circle_vis-swap-8-6sec.mp4")
     # #for i in range(6):
     # #    vis(res[i][8].repeat(2,0))
 
-    res = np.load("/mnt/d/my_github/dotAnimacy/Dot.Animacy/kof_data/smoothed/kof-smo-233.npy")
-    print(res.shape)
-    create_circle_video(res[::2,:].repeat(3,0))
+    #res = np.load("/mnt/d/my_github/dotAnimacy/Dot.Animacy/kof_data/smoothed/kof-smo-444.npy")
+    #  print(res.shape)
+    #create_circle_video(res[::2,:].repeat(2,0), output_path="circle_vis-gt-smo-444.mp4")
 
 

@@ -22,9 +22,20 @@ from lib.v2_sam.make_sam_v2 import make_samv2_from_original_state_dict
 from lib.demo_helpers.video_data_storage import SAM2VideoObjectResults
 
 
-# Define pathing & device usage
+vnumber = "1"
+stframe = 10
+
+video_folder = "/mnt/d/my_github/dotAnimacy/Dot.Animacy/supersmash-data/processed"
+
 video_path = "/mnt/d/my_github/dotAnimacy/Dot.Animacy/data-trial/SNK/snk-test-video.mp4"
-model_path = "/mnt/d/my_github/dotAnimacy/Dot.Animacy/model_weights/sam2_hiera_tiny.pt"
+
+
+# Define pathing & device usage
+# video_path = "/mnt/d/my_github/dotAnimacy/Dot.Animacy/data-trial/SNK/snk-test-video.mp4"
+
+
+
+model_path = "/mnt/d/my_github/dotAnimacy/Dot.Animacy/model_weights/sam2_hiera_small.pt"
 device, dtype = "cpu", torch.float32
 if torch.cuda.is_available():
     device, dtype = "cuda", torch.bfloat16
@@ -44,7 +55,7 @@ color_dict = {
 # -> First level key (e.g. 0, 30, 35) represents the frame index where the prompts should be applied
 # -> Second level key (e.g. 'obj1', 'obj2') represents which 'object' the prompt belongs to for tracking purposes
 prompts_per_frame_index = {  ## 可以改变起始位置
-    0: {
+    stframe: {
         "obj1": {
             "box_tlbr_norm_list": [],
             "fg_xy_norm_list": [(0.2094, 0.5444)],
@@ -56,11 +67,6 @@ prompts_per_frame_index = {  ## 可以改变起始位置
             "fg_xy_norm_list": [(0.7234, 0.5639)],
             "bg_xy_norm_list": [],
         },
-        #"obj3": {
-        #    "box_tlbr_norm_list": [],
-        #    "fg_xy_norm_list": [(0.5453, 0.7667)],
-        #    "bg_xy_norm_list": [],
-        #}
     },
     ## 90: {
     ##     "obj2": {
@@ -94,8 +100,13 @@ if not ok_frame:
     raise IOError(f"Unable to read video frames: {video_path}")
 vcap.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
+
+
 # 定义输出视频路径和编码格式
-output_video_path = "./data-trial/SuperSmash/test_messy/snk-test-dot-test.mp4"  # 替换为实际保存路径
+output_video_path = "./data-trial/SuperSmash/test_messy/snk-test-dot-test.mp4"
+
+
+
 fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
 fps = int(vcap.get(cv2.CAP_PROP_FPS))  # 获取输入视频的帧率
 print(fps)
@@ -114,6 +125,8 @@ model_config_dict, sammodel = make_samv2_from_original_state_dict(model_path)
 sammodel.to(device=device, dtype=dtype)
 
 # radius_scaling =1
+
+result_list = []
 
 # Process video frames
 close_keycodes = {27, ord("q")}  # Esc or q to close
@@ -165,6 +178,9 @@ try:
         # combined_mask_result = np.zeros(frame.shape[0:2], dtype=bool)
         combined_mask_result = np.zeros((*frame.shape[:2], 3), dtype=np.uint8) # 颜色
         mask_result = np.zeros((*frame.shape[:2], 3), dtype=np.uint8) # 颜色
+
+        arr = np.zeros((1,6))
+
         for obj_key_name, obj_memory in memory_per_obj_dict.items():
             obj_score, best_mask_idx, mask_preds, mem_enc, obj_ptr = sammodel.step_video_masking(
                 encoded_imgs_list, **obj_memory.to_dict()
@@ -196,8 +212,8 @@ try:
             if mask_coords.size > 0:
                 center_y, center_x = mask_coords.mean(axis=0).astype(int)  # 质心
                 area = mask_coords.shape[0]  # 掩码面积
-                radius = int(np.sqrt(area / np.pi)/1.1)  # 根据面积计算半径
-                if frame_idx == 0:
+                radius = int(np.sqrt(area / np.pi)/1.3)  # 根据面积计算半径
+                if frame_idx == stframe:
                 #    radius_scaling = 25 / radius
                 #radius = int(radius_scaling * radius)
                     print(radius)
@@ -210,8 +226,18 @@ try:
             if obj_key_name == "obj3":
                 obj_mask_binary = np.stack([(obj_mask > 0.0).cpu().numpy().squeeze()] * 3, axis = -1)
 
+            if obj_key_name == "obj1":
+                arr[0][0] = center_x
+                arr[0][1] = center_y
+                arr[0][2] = radius
+            if obj_key_name == "obj2":
+                arr[0][3] = center_x
+                arr[0][4] = center_y
+                arr[0][5] = radius
 
             combined_mask_result = np.bitwise_or(combined_mask_result, obj_mask_binary)
+
+        result_list.append(arr)
 
         # Combine original image & mask result side-by-side for display
         combined_mask_result_uint8 = combined_mask_result.astype(np.uint8) * 255
@@ -239,6 +265,8 @@ except KeyboardInterrupt:
     print("Closed by ctrl+c!")
 
 finally:
+    final_array = np.vstack(result_list)
+    # np.save("/mnt/d/my_github/dotAnimacy/Dot.Animacy/supersmash-data/raw-npy/"+vnumber+".npy",final_array)
     vcap.release()
     video_writer.release()  # 释放 VideoWriter
     cv2.destroyAllWindows()
