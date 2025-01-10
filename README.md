@@ -1,11 +1,12 @@
 # Dot.Animacy
 Generate and classify animated dot motions
 
-[Watch the video](https://github.com/TheWayLost/Dot.Animacy/blob/main/circle_vis-gt-smo-444.mp4)
-[Watch the video](https://github.com/TheWayLost/Dot.Animacy/blob/main/circle_vis-swap-8-6sec.mp4)
-[Watch the video](https://github.com/TheWayLost/Dot.Animacy/blob/main/circle_vis-simpleCond-timeemb.mp4)
-[Watch the video](https://github.com/TheWayLost/Dot.Animacy/blob/main/circle_vis-simpleCond.mp4)
+![Short demo](circle_vis-gt-smo-444.gif)
+![Short demo](circle_vis-swap-8-6sec.gif)
+![Short demo](circle_vis-simpleCond-timeemb.gif)
+![Short demo](circle_vis-simpleCond.gif)
 
+Which one do u think best represents animacy? o.O
 
 ## TODO List
 
