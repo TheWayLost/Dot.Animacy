@@ -3,3 +3,4 @@ model_weights/*.pt
 **.pyc
 logs
 supersmash-data
+data-trial/SNK
